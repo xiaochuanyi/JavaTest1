@@ -55,7 +55,7 @@ class Test{
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}finally{
-			JDBCTools. release(preparedStatement, conn, null);
+			JDBCTools. release(preparedStatement, conn, re);
 		}
 		return entity;
 	}
