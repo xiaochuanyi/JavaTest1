@@ -17,11 +17,9 @@ public class DAO {
 	/*
 	 * 执行更新操作
 	 */
-	public void update(String sql,Object ... args){
-		Connection conn = null;
+	public void update(Connection conn,String sql,Object ... args){
 		PreparedStatement preparedStatement = null;
 		try {
-			conn=JDBCTools.connection();
 			preparedStatement=conn.prepareStatement(sql);
 			//连接数据库，获得prepaerdStatement对象
 			for(int i = 0;i<args.length;i++){

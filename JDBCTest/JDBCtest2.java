@@ -8,6 +8,7 @@ import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.junit.Test;
@@ -69,6 +70,9 @@ public void test1(){
 		JDBCTools.release(preparedStatement, conn, rs);
 	}
 }
+/*
+ * 完成mysql对数据库读取
+ */
 @Test
 public void test2(){
 	Connection conn = null;
@@ -105,6 +109,57 @@ public void test2(){
 		e.printStackTrace();
 	}finally{
 		JDBCTools.release(preparedStatement, conn, rs);
+	}
+}
+/*
+ * 事务的处理,为了保证事务的一致性，必须用一个连接,才可以保证事务
+ */
+@Test
+public void test3(){
+	Connection conn = null;
+	try {
+		conn = JDBCTools.connection();
+		//为了保证事务的一致性，必须用一个连接
+		conn.setAutoCommit(false);
+		//开始事务，取消默认提交
+		String sql = "update user set money = money - 500 where id = 1";
+		update(conn, sql);
+		//执行转出
+		sql = "update user set money = money + 500 where id = 2";
+		update(conn, sql);
+		//执行转入
+		conn.commit();
+		//提交事务
+	} catch (Exception e) {
+		e.printStackTrace();
+		try {
+			conn.rollback();
+			//出现错误就回滚事务
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}finally{
+		JDBCTools.release(null, conn, null);
+	}
+}
+/*
+ * 用传入的连接，保证几个操作用的是一个连接保证了事务
+ */
+public void update(Connection conn,String sql,Object ... args){
+	PreparedStatement preparedStatement = null;
+	try {
+		preparedStatement=conn.prepareStatement(sql);
+		//连接数据库，获得prepaerdStatement对象
+		for(int i = 0;i<args.length;i++){
+			preparedStatement.setObject(i + 1, args[i]);
+			//利用for循环获得传入的参数并放入preparedStatement中
+		}
+		preparedStatement.executeUpdate();
+		//执行更新
+	} catch (Exception e) {
+		e.printStackTrace();
+	}finally{
+		JDBCTools.release(preparedStatement, null, null);
 	}
 }
 }
