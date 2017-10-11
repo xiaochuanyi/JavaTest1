@@ -17,9 +17,11 @@ public class DAO {
 	/*
 	 * 执行更新操作
 	 */
-	public void update(Connection conn,String sql,Object ... args){
+	public void update(String sql,Object ... args){
+		Connection conn = null;
 		PreparedStatement preparedStatement = null;
 		try {
+			conn=JDBCTools.connection();
 			preparedStatement=conn.prepareStatement(sql);
 			//连接数据库，获得prepaerdStatement对象
 			for(int i = 0;i<args.length;i++){
@@ -199,6 +201,12 @@ public class DAO {
 			}
 		}		
 		return list;
+	}
+	/*
+	 * 测试事务的隔离级别
+	 */
+	public void test5(){
+		
 	}
 
 }

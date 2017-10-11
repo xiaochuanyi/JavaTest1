@@ -148,7 +148,7 @@ public void test3(){
 public void update(Connection conn,String sql,Object ... args){
 	PreparedStatement preparedStatement = null;
 	try {
-		preparedStatement=conn.prepareStatement(sql);
+		preparedStatement=conn.prepareStatement(sql); 
 		//连接数据库，获得prepaerdStatement对象
 		for(int i = 0;i<args.length;i++){
 			preparedStatement.setObject(i + 1, args[i]);
@@ -160,6 +160,75 @@ public void update(Connection conn,String sql,Object ... args){
 		e.printStackTrace();
 	}finally{
 		JDBCTools.release(preparedStatement, null, null);
+	}
+}
+@Test
+public void test5(){
+	Connection conn = null;
+	try {
+	conn = JDBCTools.connection();
+	conn.setAutoCommit(false);
+	//开始事务，取消默认提交
+	String sql = "update user set money = money - 500 where id = 1";
+	update(conn, sql);
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+}
+@Test
+public <E> E getforvalue(String sql,Object ... args){
+	Connection conn = null;
+	PreparedStatement preparedStatement = null;
+	ResultSet re=null;
+	try {
+		conn = JDBCTools.connection();
+		conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+		//读取已经提交的
+		preparedStatement = conn.prepareStatement(sql);
+		//获取数据库连接并且获得preparedStatement对象
+		for(int i = 0; i < args.length; i++){
+			preparedStatement.setObject(i + 1, args[i]);
+			//将传入的对象放入sql语句中
+		}
+		re = preparedStatement.executeQuery();
+		//执行查询操作并用result获查询对象
+		if(re.next()){				
+			return (E) re.getObject(1);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}finally{
+		JDBCTools.release(preparedStatement, conn, re);
+	}
+		return null;
+}
+/*
+ * 批量处理的操作
+ */
+@Test
+public void test6(){
+	Connection conn=null;
+	PreparedStatement preparedStatement = null;
+	try {
+		String sql = "insert into user value (?,?,?)";
+		conn = JDBCTools.connection();
+		preparedStatement =conn.prepareStatement(sql);
+		for(int i = 0;i<1000;i++){
+			preparedStatement.setInt(1, i + 1);
+			preparedStatement.setString(2, "name"+i+"");
+			preparedStatement.setInt(3,1000);
+			preparedStatement.addBatch();
+			//积攒sql语句
+			if((i%100)==0){
+				preparedStatement.executeBatch();
+				preparedStatement.clearBatch();
+			}
+			//当sql语句每积攒100条时，执行插入并清除batch
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}finally{
+		JDBCTools.release(preparedStatement, conn, null);
 	}
 }
 }
