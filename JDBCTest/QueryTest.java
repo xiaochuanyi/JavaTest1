@@ -65,6 +65,7 @@ public class QueryTest {
 		Test test=new Test();
 		String sql="select StudentId studentId,Studentname studentName,Age age,Majors majors1 from student where StudentId=?";
 		 Student stu=test.get(Student.class, sql, 12345678);
+		 System.out.println(stu);
 	}
 
 }
