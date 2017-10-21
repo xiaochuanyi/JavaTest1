@@ -1,8 +1,6 @@
 package JDBCTest;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -11,8 +9,6 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.junit.Test;
-
-import com.mysql.fabric.xmlrpc.base.Data;
 
 /*
  * 实现数据库连接池的测试方法

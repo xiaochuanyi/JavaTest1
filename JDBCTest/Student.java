@@ -83,5 +83,4 @@ public class Student {
 	public void setMajors(String majors) {
 		this.majors1 = majors;
 	}
-	private String majors;
 }
