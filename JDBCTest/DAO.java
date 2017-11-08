@@ -151,6 +151,7 @@ public class DAO {
 	private List<String> getColumnlable(ResultSet re) throws Exception{
 		List<String> list = new ArrayList<>();
 		ResultSetMetaData rs = re.getMetaData();
+		//获取结果集的列名
 		for(int i = 0; i < rs.getColumnCount(); i++){
 			list.add(rs.getColumnLabel(i + 1));
 		}
